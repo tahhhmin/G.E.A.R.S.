@@ -1,0 +1,15 @@
+h1 {
+    font-family: var(--font-geist-mono);
+}
+h2 {
+    font-family: var(--font-heading);
+}
+h3 {
+    font-family: var(--font-heading);
+}
+p {
+    font-family: var(--font-body);
+}
+a {
+    font-family: var(--font-body);
+}

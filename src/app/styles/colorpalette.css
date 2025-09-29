@@ -1,0 +1,28 @@
+:root {  
+    /* Basic Colors */
+    --color-white: #FAFAFA;
+    --color-black: #171717;
+    --color-gray: #262626;
+    --color-light-gray: #787878;
+    --color-red: #9E4042;
+
+
+    /* Color Assignment */
+    
+
+
+    /* Default to light theme */
+    --color-text: var(--color-black);
+    --color-card: var(--color-off-white);
+    --color-border: var(--color-light2-gray);
+    --color-input: var(--color-off-white);
+    --color-muted: var( --color-light1-gray);
+}
+html.dark {
+    --color-background: var(--color-black);
+    --color-text: var(--color-white);
+    --color-card: var(--color-gray);
+    --color-border: var(--color-light-gray);
+    --color-input: var(--color-light1-gray);
+    --color-muted: var(--color-light2-gray);
+}

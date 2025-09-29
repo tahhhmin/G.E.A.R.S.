@@ -1,0 +1,29 @@
+/* Base Progress Container */
+.progressContainer {
+    width: 100%;
+    background-color: var(--color-card);
+    height: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Indeterminate Progress Bar */
+.indeterminateBar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 16px;
+    width: 33.333333%;
+    background: linear-gradient(90deg, transparent, #f0562d, transparent);
+    border-radius: 9999px;
+    animation: slide 2s infinite linear;
+}
+
+@keyframes slide {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(300%);
+    }
+}
