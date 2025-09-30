@@ -32,40 +32,34 @@ export default function MapGridLevel3({
   const [cellsSource] = useState<string>('tempo-cells-source');
   const [cellsLayer] = useState<string>('tempo-cells-layer');
 
-  // TEMPO Level 3 grid specifications
-  const minLon = -155;
-  const maxLon = -24.5;
-  const minLat = 17.2;
-  const maxLat = 63.55;
-  const gridResolution = 0.02;
+  // TEMPO Level 3 grid specifications (fixed at 0.1° resolution)
+  const gridResolution = 0.1;
+
+  const minLon = Math.floor(-155 / gridResolution) * gridResolution;
+  const maxLon = Math.ceil(-24.5 / gridResolution) * gridResolution;
+  const minLat = Math.floor(17.2 / gridResolution) * gridResolution;
+  const maxLat = Math.ceil(63.55 / gridResolution) * gridResolution;
 
   // Fetch NO2 data for a grid cell
   const fetchNO2Data = async (lon: number, lat: number) => {
     setLoading(true);
     try {
-      // Note: This is a placeholder. In production, you would:
-      // 1. Use NASA Earthdata API with authentication
-      // 2. Or use Google Earth Engine API
-      // 3. Or pre-download and host the data
-      
-      // Simulated API call
       const response = await fetch('/api/tempo-no2', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ longitude: lon, latitude: lat }),
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setNo2Data(data.no2_troposphere);
       } else {
-        // Fallback: Generate mock data for demonstration
+        // fallback mock data
         const mockNO2 = Math.random() * 5e15 + 5e14;
         setNo2Data(mockNO2);
       }
     } catch (error) {
       console.error('Error fetching NO2 data:', error);
-      // Mock data for demo
       const mockNO2 = Math.random() * 5e15 + 5e14;
       setNo2Data(mockNO2);
     } finally {
@@ -79,13 +73,13 @@ export default function MapGridLevel3({
 
     const handleClick = (e: mapboxgl.MapMouseEvent) => {
       const { lng, lat } = e.lngLat;
-      
-      // Check if click is within TEMPO coverage
+
+      // check if click is within TEMPO coverage
       if (lng < minLon || lng > maxLon || lat < minLat || lat > maxLat) {
         return;
       }
 
-      // Snap to grid
+      // snap to 0.1° grid
       const cellLon = Math.floor(lng / gridResolution) * gridResolution;
       const cellLat = Math.floor(lat / gridResolution) * gridResolution;
 
@@ -102,7 +96,7 @@ export default function MapGridLevel3({
       onGridClick?.(cellData);
       fetchNO2Data(cellData.longitude, cellData.latitude);
 
-      // Highlight selected cell
+      // highlight selected cell
       if (map.getSource(cellsSource)) {
         (map.getSource(cellsSource) as mapboxgl.GeoJSONSource).setData({
           type: 'Feature',
@@ -137,15 +131,13 @@ export default function MapGridLevel3({
     if (!map || !showGrid) return;
 
     const addGridToMap = () => {
-      // Remove existing layers
       if (map.getLayer(gridLayer)) map.removeLayer(gridLayer);
       if (map.getLayer(cellsLayer)) map.removeLayer(cellsLayer);
       if (map.getSource(gridSource)) map.removeSource(gridSource);
       if (map.getSource(cellsSource)) map.removeSource(cellsSource);
 
-      // Add grid lines (simplified - only show every 10th line for performance)
       const features: any[] = [];
-      const step = gridResolution * 10;
+      const step = gridResolution * 10; // show every 10th line for performance
 
       for (let lon = minLon; lon <= maxLon; lon += step) {
         features.push({
@@ -183,7 +175,6 @@ export default function MapGridLevel3({
         },
       });
 
-      // Add selected cell layer
       map.addSource(cellsSource, {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] } as any,
@@ -249,7 +240,7 @@ export default function MapGridLevel3({
           <div style={{ fontSize: '13px', color: 'white', marginBottom: '8px' }}>
             <strong>Lon:</strong> {selectedCell.longitude.toFixed(4)}°
           </div>
-          
+
           {loading ? (
             <div style={{ fontSize: '13px', color: '#3b82f6' }}>Loading NO₂ data...</div>
           ) : no2Data !== null ? (
@@ -260,9 +251,7 @@ export default function MapGridLevel3({
               <div style={{ fontSize: '18px', color: '#3b82f6', fontWeight: 'bold' }}>
                 {no2Data.toExponential(2)}
               </div>
-              <div style={{ fontSize: '11px', color: '#666' }}>
-                molecules/cm²
-              </div>
+              <div style={{ fontSize: '11px', color: '#666' }}>molecules/cm²</div>
             </>
           ) : null}
         </div>
